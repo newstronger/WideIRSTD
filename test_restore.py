@@ -58,14 +58,13 @@ def test():
                     sub_pred2=net2.forward(sub_img)
                     pred[:,:,i:i+512,j:j+512]=(sub_pred1+sub_pred2)/2
             pred = pred[:,:,:size[0],:size[1]] 
-        
-        ### save img
-        if opt.save_img == True:
-            _img=(pred[0,0,:,:]>opt.threshold).float().cpu()
-            img_save = transforms.ToPILImage()(_img)
-            if not os.path.exists(opt.save_img_dir):
-                os.makedirs(opt.save_img_dir)
-            img_save.save(opt.save_img_dir + img_dir[0] + '.png')  
+            ### save img
+            if opt.save_img == True:
+                _img=(pred[0,0,:,:]>opt.threshold).float().cpu()
+                img_save = transforms.ToPILImage()(_img)
+                if not os.path.exists(opt.save_img_dir):
+                    os.makedirs(opt.save_img_dir)
+                img_save.save(opt.save_img_dir + img_dir[0] + '.png')  
 
 if __name__ == '__main__':
     opt.test_dataset_name = opt.dataset_names
