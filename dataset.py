@@ -79,7 +79,7 @@ class TestSetLoader(Dataset):
     def __init__(self, dataset_dir, train_dataset_name, test_dataset_name, img_norm_cfg=None):
         super(TestSetLoader).__init__()
         self.dataset_dir = dataset_dir + '/' + test_dataset_name
-        with open(self.dataset_dir + '/img_idx/test.txt', 'r') as f:
+        with open(self.dataset_dir + '/img_idx/test_NUAA-SIRST.txt', 'r') as f:
             self.test_list = f.read().splitlines()
         if img_norm_cfg == None:
             self.img_norm_cfg = get_img_norm_cfg(train_dataset_name, dataset_dir)
