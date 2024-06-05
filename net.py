@@ -22,7 +22,7 @@ class Net(nn.Module):
             else:
                 self.model = DNANet(mode='test')
         elif model_name == 'Trid':
-            self.model = TridenUNet()
+            self.model = TridentUNet()
     def forward(self, img, str1=None,str2=None):
         return self.model(img)
 
