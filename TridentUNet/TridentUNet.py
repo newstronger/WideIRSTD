@@ -10,11 +10,13 @@ from tools.trident import *
 from tools.common import *
 from tools.fusion import *
 from tools.common import _FCNHead
+from tools.frenquacy_resnet import spctral_residual
 
 class TridentUNet(nn.Module):
     def __init__(self,inchans=1,channels=[16,32,64,128],layers=[2,2,2,2],dilations=[1,2,3]) -> None:
         super().__init__()
         self.encoder=TridentEncoder(inchans,channels,layers,dilations)
+        self.sr=spctral_residual()
         self.conv1=nn.Sequential(
             nn.Conv2d(channels[0]*3,channels[0],1,1,0,bias=False),
             nn.BatchNorm2d(channels[0]),
@@ -85,13 +87,13 @@ class TridentUNet(nn.Module):
     def forward(self,x):
         fm=self.encoder(x)
         x1=self.conv1(torch.cat([fm[0][0],fm[0][1],fm[0][2]],1))
-        
+        x1=self.sr(x1)+x1
         x2=self.conv2(torch.cat([fm[1][0],fm[1][1],fm[1][2]],1))
-        # x2=self.FA(x2)
+        x2=self.sr(x2)+x2
         x3=self.conv3(torch.cat([fm[2][0],fm[2][1],fm[2][2]],1))
-        # x3=self.FA(x3)
+        x3=self.sr(x3)+x3
         x4=self.conv4(torch.cat([fm[3][0],fm[3][1],fm[3][2]],1))
-        # x4=self.FA(x4)
+        x4=self.sr(x4)+x4
 
         # out=self.botteneck(torch.cat([self.downsample8(self.vit1(x1)),
         #                               self.downsample4(self.vit2(x2)),
