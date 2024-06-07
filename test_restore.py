@@ -12,7 +12,7 @@ import time
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 parser = argparse.ArgumentParser(description="PyTorch BasicIRSTD test")
-parser.add_argument("--model_names", default='mix', type=str, 
+parser.add_argument("--model_names", default='Trid', type=str, 
                     help="model_name: 'ACM', 'ALCNet', 'DNANet', 'ISNet', 'UIUNet', 'RDIAN', 'ISTDU-Net', 'U-Net', 'RISTDnet'")
 parser.add_argument("--pth_dirs", default='Trid_60.pth.tar', type=str, help="checkpoint dir, default=None or ['NUDT-SIRST/ACM_400.pth.tar','NUAA-SIRST/ACM_400.pth.tar']")
 parser.add_argument("--dataset_dir", default='./datasets', type=str, help="train_dataset_dir")
@@ -24,7 +24,7 @@ parser.add_argument("--img_norm_cfg", default=None, type=dict,
 parser.add_argument("--save_img", default=True, type=bool, help="save image of or not")
 parser.add_argument("--save_img_dir", type=str, default='./inference/mask/', help="path of saved image")
 parser.add_argument("--save_log", type=str, default='./log_seed_posSample/', help="path of saved .pth")
-parser.add_argument("--threshold", type=float, default=0.45)
+parser.add_argument("--threshold", type=float, default=0.1)
 parser.add_argument("--batchSize", type=int, default=1, help="Training batch sizse")
 
 global opt
@@ -45,7 +45,7 @@ def test():
         net2.eval()
     else:
         net = Net(model_name='Trid', mode='test').cuda()
-        net.load_state_dict(torch.load('Trid_sctral_residual_60.pth.tar')['state_dict'])
+        net.load_state_dict(torch.load('Trid_60.pth.tar')['state_dict'])
         net.eval()
     
     tbar = tqdm(test_loader)
