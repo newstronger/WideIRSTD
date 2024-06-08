@@ -24,7 +24,7 @@ parser.add_argument("--img_norm_cfg", default=None, type=dict,
 parser.add_argument("--save_img", default=True, type=bool, help="save image of or not")
 parser.add_argument("--save_img_dir", type=str, default='./inference/mask/', help="path of saved image")
 parser.add_argument("--save_log", type=str, default='./log_seed_posSample/', help="path of saved .pth")
-parser.add_argument("--threshold", type=float, default=0.1)
+parser.add_argument("--threshold", type=float, default=0.4)
 parser.add_argument("--batchSize", type=int, default=1, help="Training batch sizse")
 
 global opt
