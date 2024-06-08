@@ -12,7 +12,7 @@ import time
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 parser = argparse.ArgumentParser(description="PyTorch BasicIRSTD test")
-parser.add_argument("--model_names", default='Trid', type=str, 
+parser.add_argument("--model_names", default='mix', type=str, 
                     help="model_name: 'ACM', 'ALCNet', 'DNANet', 'ISNet', 'UIUNet', 'RDIAN', 'ISTDU-Net', 'U-Net', 'RISTDnet'")
 parser.add_argument("--pth_dirs", default='Trid_60.pth.tar', type=str, help="checkpoint dir, default=None or ['NUDT-SIRST/ACM_400.pth.tar','NUAA-SIRST/ACM_400.pth.tar']")
 parser.add_argument("--dataset_dir", default='./datasets', type=str, help="train_dataset_dir")
@@ -61,7 +61,7 @@ def test():
                     if opt.model_name == 'mix':
                         sub_pred1=net1.forward(sub_img)
                         sub_pred2=net2.forward(sub_img)
-                        pred[:,:,i:i+512,j:j+512]=(sub_pred1+sub_pred2)/2
+                        pred[:,:,i:i+512,j:j+512]=torch.max(sub_pred1,sub_pred2)
                     else:
                         sub_pred=net.forward(sub_img)
                         pred[:,:,i:i+512,j:j+512]=sub_pred
