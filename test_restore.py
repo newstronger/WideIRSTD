@@ -35,18 +35,21 @@ if opt.save_img == True:
 def test(): 
     test_set = TestSetLoader(opt.dataset_dir, opt.train_dataset_name, opt.test_dataset_name, opt.img_norm_cfg)
     test_loader = DataLoader(dataset=test_set, num_workers=8, batch_size=opt.batchSize, shuffle=False)
-    if opt.model_name == 'mix':
-        net1 = Net(model_name='Trid', mode='test').cuda()
-        net1.load_state_dict(torch.load('Trid_60.pth.tar')['state_dict'])
-        net1.eval()
+    net = Net(model_name=opt.model_name, mode='test').cuda()
+    net.load_state_dict(torch.load(opt.pth_dir)['state_dict'])
+    net.eval()
+    # if opt.model_name == 'mix':
+    #     net1 = Net(model_name='Trid', mode='test').cuda()
+    #     net1.load_state_dict(torch.load('Trid_60.pth.tar')['state_dict'])
+    #     net1.eval()
 
-        net2 = Net(model_name='DNANet', mode='test').cuda()
-        net2.load_state_dict(torch.load('DNANet_70.pth.tar')['state_dict'])
-        net2.eval()
-    else:
-        net = Net(model_name=opt.model_name, mode='test').cuda()
-        net.load_state_dict(torch.load(opt.pth_dir)['state_dict'])
-        net.eval()
+    #     net2 = Net(model_name='DNANet', mode='test').cuda()
+    #     net2.load_state_dict(torch.load('DNANet_70.pth.tar')['state_dict'])
+    #     net2.eval()
+    # else:
+    #     net = Net(model_name=opt.model_name, mode='test').cuda()
+    #     net.load_state_dict(torch.load(opt.pth_dir)['state_dict'])
+    #     net.eval()
     
     tbar = tqdm(test_loader)
     with torch.no_grad():
