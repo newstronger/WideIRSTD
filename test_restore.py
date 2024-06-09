@@ -54,7 +54,7 @@ def test():
             pred=img
             _,_,h,w=img.shape
             pred=Variable(pred).cuda()
-            img = Variable(img).cuda().squeeze(0).unsqueeze(0)
+            img = Variable(img).cuda()
             for i in range(0, h, 512):
                 for j in range(0,w,512):
                     sub_img=img[:,:,i:i+512,j:j+512]
