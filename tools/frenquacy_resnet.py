@@ -1,4 +1,4 @@
-import cv2
+# import cv2
 import numpy as np
 import torch
 import torch.nn as nn
@@ -46,26 +46,6 @@ def mean_filter2d(image, kernel_size=3):
     image = image.unsqueeze(0).unsqueeze(0)
     filtered_image = F.conv2d(image, weight, padding=padding)
     return filtered_image.squeeze(0).squeeze(0)
-
-# 示例
-if __name__ == "__main__":
-    import cv2
-    import numpy as np
-    from matplotlib import pyplot as plt
-
-    # 读取图像并转换为 PyTorch tensor
-    # image_path = '/home/Newdisk/wangzhang/Infraed/NUDT-SIRST/images/001327.png'  # 替换为实际图片路径
-    # image = cv2.imread(image_path)
-    # gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-    # image_tensor=torch.from_numpy(gray).unsqueeze(0).unsqueeze(0)
-    # Res=spctral_residual()(image_tensor).numpy()
-    # rge=np.max(Res)-np.min(Res)
-    # norm=(Res-np.min(Res))*255/rge
-    # print(norm.shape)
-    # cv2.imwrite('sm1.jpg',norm)
-    x=torch.randn(8,16,128,128)
-    y=spctral_residual()(x)
-    print(y.shape)
 
 
 
