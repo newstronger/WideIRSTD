@@ -44,8 +44,8 @@ def test():
         net2.load_state_dict(torch.load('DNANet_70.pth.tar')['state_dict'])
         net2.eval()
     else:
-        net = Net(model_name='Trid', mode='test').cuda()
-        net.load_state_dict(torch.load('Trid_60.pth.tar')['state_dict'])
+        net = Net(model_name=opt.model_name, mode='test').cuda()
+        net.load_state_dict(torch.load(opt.pth_dir)['state_dict'])
         net.eval()
     
     tbar = tqdm(test_loader)
