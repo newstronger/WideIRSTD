@@ -58,20 +58,20 @@ def test():
             for i in range(0, h, 512):
                 for j in range(0,w,512):
                     sub_img=img[:,:,i:i+512,j:j+512]
-                    if opt.model_name == 'mix':
-                        sub_pred1=net1.forward(sub_img)
-                        sub_pred2=net2.forward(sub_img)
-                        pred[:,:,i:i+512,j:j+512]=torch.max(sub_pred1,sub_pred2)
-                    else:
-                        sub_pred=net.forward(sub_img)
-                        pred[:,:,i:i+512,j:j+512]=sub_pred
+                    sub_pred=net.forward(sub_img)
+                    pred[:,:,i:i+512,j:j+512]=sub_pred
+                    # if opt.model_name == 'mix':
+                    #     sub_pred1=net1.forward(sub_img)
+                    #     sub_pred2=net2.forward(sub_img)
+                    #     pred[:,:,i:i+512,j:j+512]=torch.max(sub_pred1,sub_pred2)
+                    # else:
+                    #     sub_pred=net.forward(sub_img)
+                    #     pred[:,:,i:i+512,j:j+512]=sub_pred
             pred = pred[:,:,:size[0],:size[1]] 
             ### save img
             if opt.save_img == True:
                 _img=(pred[0,0,:,:]>opt.threshold).float().cpu()
                 img_save = transforms.ToPILImage()(_img)
-                if not os.path.exists(opt.save_img_dir):
-                    os.makedirs(opt.save_img_dir)
                 img_save.save(opt.save_img_dir + img_dir[0] + '.png')  
 
 if __name__ == '__main__':
@@ -79,5 +79,7 @@ if __name__ == '__main__':
     opt.model_name = opt.model_names
     opt.train_dataset_name = opt.dataset_names
     opt.pth_dir=opt.pth_dirs
+    if not os.path.exists(opt.save_img_dir):
+        os.makedirs(opt.save_img_dir)
     test()
         
