@@ -38,19 +38,6 @@ def test():
     net = Net(model_name=opt.model_name, mode='test').cuda()
     net.load_state_dict(torch.load(opt.pth_dir)['state_dict'])
     net.eval()
-    # if opt.model_name == 'mix':
-    #     net1 = Net(model_name='Trid', mode='test').cuda()
-    #     net1.load_state_dict(torch.load('Trid_60.pth.tar')['state_dict'])
-    #     net1.eval()
-
-    #     net2 = Net(model_name='DNANet', mode='test').cuda()
-    #     net2.load_state_dict(torch.load('DNANet_70.pth.tar')['state_dict'])
-    #     net2.eval()
-    # else:
-    #     net = Net(model_name=opt.model_name, mode='test').cuda()
-    #     net.load_state_dict(torch.load(opt.pth_dir)['state_dict'])
-    #     net.eval()
-    
     tbar = tqdm(test_loader)
     with torch.no_grad():
         for idx_iter, (img, size, img_dir) in enumerate(tbar):
@@ -63,13 +50,6 @@ def test():
                     sub_img=img[:,:,i:i+512,j:j+512]
                     sub_pred=net.forward(sub_img)
                     pred[:,:,i:i+512,j:j+512]=sub_pred
-                    # if opt.model_name == 'mix':
-                    #     sub_pred1=net1.forward(sub_img)
-                    #     sub_pred2=net2.forward(sub_img)
-                    #     pred[:,:,i:i+512,j:j+512]=torch.max(sub_pred1,sub_pred2)
-                    # else:
-                    #     sub_pred=net.forward(sub_img)
-                    #     pred[:,:,i:i+512,j:j+512]=sub_pred
             pred = pred[:,:,:size[0],:size[1]] 
             ### save img
             if opt.save_img == True:
