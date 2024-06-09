@@ -7,7 +7,7 @@ from utils import *
 import os
 from loss import *
 from TridentUNet.TridentUNet import *
-# from TridentUNet.PABUNet import *
+from TridentUNet.PABUNet import *
 from DNANet.DNANet import *
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
@@ -24,11 +24,11 @@ class Net(nn.Module):
                 self.model = DNANet(mode='test')
         elif model_name == 'Trid':
             self.model = TridentUNet()
-        # elif model_name == 'PAB':
-        #     if mode == 'train':
-        #         self.model = PABUNet(mode='train')
-        #     else:
-        #         self.model = PABUNet(mode='test')
+        elif model_name == 'PAB':
+            if mode == 'train':
+                self.model = PABUNet(mode='train')
+            else:
+                self.model = PABUNet(mode='test')
     def forward(self, img):
         return self.model(img)
 
