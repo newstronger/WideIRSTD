@@ -29,7 +29,7 @@ class Net(nn.Module):
                 self.model = PABUNet(mode='train')
             else:
                 self.model = PABUNet(mode='test')
-    def forward(self, img, str1=None,str2=None):
+    def forward(self, img):
         return self.model(img)
 
     def loss(self, pred, gt_mask):
