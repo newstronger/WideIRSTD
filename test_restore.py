@@ -53,8 +53,7 @@ def test():
             _,_,h,w=img.shape
             pred=Variable(pred).cuda()
             img = Variable(img).cuda()
-            max=max(size[0],size[1])
-            if max >= 2048:
+            if size[0] >= 2048 or size[1] >=2048:
                 pred = torch.zeros(pred.shape)
             else:
                 for i in range(0, h, 512):
