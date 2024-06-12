@@ -53,16 +53,20 @@ def test():
             _,_,h,w=img.shape
             pred=Variable(pred).cuda()
             img = Variable(img).cuda()
-            for i in range(0, h, 512):
-                for j in range(0,w,512):
-                    sub_img=img[:,:,i:i+512,j:j+512]
-                    if opt.model_name == 'mix':
-                        sub_pred1=net1.forward(sub_img)
-                        sub_pred2=net2.forward(sub_img)
-                        pred[:,:,i:i+512,j:j+512]=torch.max(sub_pred1,sub_pred2)
-                    else:
-                        sub_pred=net.forward(sub_img)
-                        pred[:,:,i:i+512,j:j+512]=sub_pred
+            max=max(size[0],size[1])
+            if max >= 2048:
+                pred = torch.zeros(pred.shape)
+            else:
+                for i in range(0, h, 512):
+                    for j in range(0,w,512):
+                        sub_img=img[:,:,i:i+512,j:j+512]
+                        if opt.model_name == 'mix':
+                            sub_pred1=net1.forward(sub_img)
+                            sub_pred2=net2.forward(sub_img)
+                            pred[:,:,i:i+512,j:j+512]=torch.max(sub_pred1,sub_pred2)
+                        else:
+                            sub_pred=net.forward(sub_img)
+                            pred[:,:,i:i+512,j:j+512]=sub_pred
             pred = pred[:,:,:size[0],:size[1]] 
             ### save img
             if opt.save_img == True:
