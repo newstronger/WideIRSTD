@@ -9,6 +9,7 @@ from loss import *
 from TridentUNet.TridentUNet import *
 # from TridentUNet.PABUNet import *
 from DNANet.DNANet import *
+from DNANet.model_ISTDUNet import *
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
@@ -24,6 +25,8 @@ class Net(nn.Module):
                 self.model = DNANet(mode='test')
         elif model_name == 'Trid':
             self.model = TridentUNet()
+        elif model_name == 'ISTDU-Net':
+            self.model = ISTDU_Net()
         # elif model_name == 'PAB':
         #     if mode == 'train':
         #         self.model = PABUNet(mode='train')
