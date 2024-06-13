@@ -63,7 +63,7 @@ def test():
                         sub_pred1=net1.forward(sub_img)
                         sub_pred2=net2.forward(sub_img)
                         sub_pred3=net3.forward(sub_img)
-                        pred[:,:,i:i+512,j:j+512]=torch.max(sub_pred1,sub_pred2,sub_pred3)
+                        pred[:,:,i:i+512,j:j+512]=torch.max(torch.max(sub_pred1,sub_pred2),sub_pred3)
                     else:
                         sub_pred=net.forward(sub_img)
                         pred[:,:,i:i+512,j:j+512]=sub_pred
