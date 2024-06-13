@@ -24,7 +24,7 @@ parser.add_argument("--img_norm_cfg", default=None, type=dict,
 parser.add_argument("--save_img", default=True, type=bool, help="save image of or not")
 parser.add_argument("--save_img_dir", type=str, default='./inference/mask/', help="path of saved image")
 parser.add_argument("--save_log", type=str, default='./log_seed_posSample/', help="path of saved .pth")
-parser.add_argument("--threshold", type=float, default=0.5)
+parser.add_argument("--threshold", type=list, default=[0.5,0.85])
 parser.add_argument("--batchSize", type=int, default=1, help="Training batch sizse")
 
 global opt
@@ -53,23 +53,23 @@ def test():
             _,_,h,w=img.shape
             pred=Variable(pred).cuda()
             img = Variable(img).cuda()
-            if size[0] >= 2048 or size[1] >=2048:
-                pred = torch.zeros(pred.shape)
-            else:
-                for i in range(0, h, 512):
-                    for j in range(0,w,512):
-                        sub_img=img[:,:,i:i+512,j:j+512]
-                        if opt.model_name == 'mix':
-                            sub_pred1=net1.forward(sub_img)
-                            sub_pred2=net2.forward(sub_img)
-                            pred[:,:,i:i+512,j:j+512]=torch.max(sub_pred1,sub_pred2)
-                        else:
-                            sub_pred=net.forward(sub_img)
-                            pred[:,:,i:i+512,j:j+512]=sub_pred
+            for i in range(0, h, 512):
+                for j in range(0,w,512):
+                    sub_img=img[:,:,i:i+512,j:j+512]
+                    if opt.model_name == 'mix':
+                        sub_pred1=net1.forward(sub_img)
+                        sub_pred2=net2.forward(sub_img)
+                        pred[:,:,i:i+512,j:j+512]=torch.max(sub_pred1,sub_pred2)
+                    else:
+                        sub_pred=net.forward(sub_img)
+                        pred[:,:,i:i+512,j:j+512]=sub_pred
             pred = pred[:,:,:size[0],:size[1]] 
             ### save img
             if opt.save_img == True:
-                _img=(pred[0,0,:,:]>opt.threshold).float().cpu()
+                if size[0] >= 1800 or size[1] >=1800:
+                    _img=(pred[0,0,:,:]>opt.threshold[1]).float().cpu()
+                else:
+                    _img=(pred[0,0,:,:]>opt.threshold[0]).float().cpu()
                 img_save = transforms.ToPILImage()(_img)
                 img_save.save(opt.save_img_dir + img_dir[0] + '.png')  
 
