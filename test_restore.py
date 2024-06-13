@@ -37,11 +37,14 @@ def test():
     test_loader = DataLoader(dataset=test_set, num_workers=8, batch_size=opt.batchSize, shuffle=False)
     if opt.model_name == 'mix':
         net1=Net(model_name='Trid',mode='test').cuda()
-        net1.load_state_dict(torch.load('Trid_60.pth.tar')['state_dict'])
+        net1.load_state_dict(torch.load('checkpoint.pth.tar')['state_dict'])
         net1.eval()
-        net2=Net(model_name='Trid',mode='test').cuda()
-        net2.load_state_dict(torch.load('checkpoint.pth.tar')['state_dict'])
+        net2=Net(model_name='DNANet',mode='test').cuda()
+        net2.load_state_dict(torch.load('DNA_SLS.pth.tar')['state_dict'])
         net2.eval()
+        net3=Net(model_name='ISTDU-Net',mode='test').cuda()
+        net3.load_state_dict(torch.load('./DNANet/ISTDU-Net_240.pth.tar')['state_dict'])
+        net3.eval()
     else:
         net = Net(model_name=opt.model_name, mode='test').cuda()
         net.load_state_dict(torch.load(opt.pth_dir)['state_dict'])
