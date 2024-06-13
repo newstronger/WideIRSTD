@@ -87,6 +87,7 @@ def test():
                     pred=(pred[0,0,:,:]>opt.threshold[1]).float()
                 else:
                     pred=(pred[0,0,:,:]>opt.threshold[0]).float()
+            print(pred.shape,size[0],size[1])
             pred = pred[:,:,:size[0],:size[1]] 
             ### save img
             if opt.save_img == True:
