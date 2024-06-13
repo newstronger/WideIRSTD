@@ -54,7 +54,9 @@ def test():
         for idx_iter, (img, size, img_dir) in enumerate(tbar):
             pred=img
             _,_,h,w=img.shape
-            pred=Variable(pred).cuda()
+            pred1=Variable(pred).cuda()
+            pred2=Variable(pred).cuda()
+            pred3=Variable(pred).cuda()
             img = Variable(img).cuda()
             for i in range(0, h, 512):
                 for j in range(0,w,512):
@@ -63,17 +65,36 @@ def test():
                         sub_pred1=net1.forward(sub_img)
                         sub_pred2=net2.forward(sub_img)
                         sub_pred3=net3.forward(sub_img)
-                        pred[:,:,i:i+512,j:j+512]=torch.max(torch.max(sub_pred1,sub_pred2),sub_pred3)
+                        pred1[:,:,i:i+512,j:j+512]=sub_pred1
+                        pred2[:,:,i:i+512,j:j+512]=sub_pred2
+                        pred3[:,:,i:i+512,j:j+512]=sub_pred3
                     else:
                         sub_pred=net.forward(sub_img)
                         pred[:,:,i:i+512,j:j+512]=sub_pred
+            if opt.model_name == 'mix':
+                if size[0] >= 1800 or size[1] >=1800:
+                    pred1=(pred1[0,0,:,:]>opt.threshold[1]).float()
+                    pred2=(pred2[0,0,:,:]>opt.threshold[1]).float()
+                    pred3=(pred3[0,0,:,:]>opt.threshold[1]).float()
+                    pred=((pred1+pred2+pred3)>1).float()
+                else :
+                    pred1=(pred1[0,0,:,:]>opt.threshold[0]).float()
+                    pred2=(pred2[0,0,:,:]>opt.threshold[0]).float()
+                    pred3=(pred3[0,0,:,:]>opt.threshold[0]).float()
+                    pred=((pred1+pred2+pred3)>1).float()
+            else:
+                if size[0] >= 1800 or size[1] >=1800:
+                    pred=(pred[0,0,:,:]>opt.threshold[1]).float()
+                else:
+                    pred=(pred[0,0,:,:]>opt.threshold[0]).float()
             pred = pred[:,:,:size[0],:size[1]] 
             ### save img
             if opt.save_img == True:
-                if size[0] >= 1800 or size[1] >=1800:
-                    _img=(pred[0,0,:,:]>opt.threshold[1]).float().cpu()
-                else:
-                    _img=(pred[0,0,:,:]>opt.threshold[0]).float().cpu()
+                # if size[0] >= 1800 or size[1] >=1800:
+                #     _img=(pred[0,0,:,:]>opt.threshold[1]).float().cpu()
+                # else:
+                #     _img=(pred[0,0,:,:]>opt.threshold[0]).float().cpu()
+                _img = pred.cpu()
                 img_save = transforms.ToPILImage()(_img)
                 img_save.save(opt.save_img_dir + img_dir[0] + '.png')  
 
