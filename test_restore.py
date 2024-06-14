@@ -58,6 +58,7 @@ def test():
             pred2=Variable(pred).cuda()
             pred3=Variable(pred).cuda()
             img = Variable(img).cuda()
+            index=torch.ones(pred.shape).cuda()
             for i in range(0, h, 512):
                 for j in range(0,w,512):
                     sub_img=img[:,:,i:i+512,j:j+512]
