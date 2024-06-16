@@ -24,7 +24,7 @@ parser.add_argument("--img_norm_cfg", default=None, type=dict,
 parser.add_argument("--save_img", default=True, type=bool, help="save image of or not")
 parser.add_argument("--save_img_dir", type=str, default='./inference/mask/', help="path of saved image")
 parser.add_argument("--save_log", type=str, default='./log_seed_posSample/', help="path of saved .pth")
-parser.add_argument("--threshold", type=list, default=[0.3,0.5,0.85])
+parser.add_argument("--threshold", type=list, default=[0.1,0.5,0.95])
 parser.add_argument("--batchSize", type=int, default=1, help="Training batch sizse")
 
 global opt
@@ -37,13 +37,13 @@ def test():
     test_loader = DataLoader(dataset=test_set, num_workers=8, batch_size=opt.batchSize, shuffle=False)
     if opt.model_name == 'mix':
         net1=Net(model_name='Trid',mode='test').cuda()
-        net1.load_state_dict(torch.load('checkpoint.pth.tar')['state_dict'])
+        net1.load_state_dict(torch.load('Trid_best.pth.tar')['state_dict'])
         net1.eval()
         net2=Net(model_name='DNANet',mode='test').cuda()
-        net2.load_state_dict(torch.load('DNA_SLS.pth.tar')['state_dict'])
+        net2.load_state_dict(torch.load('DNA_best.pth.tar')['state_dict'])
         net2.eval()
         net3=Net(model_name='ISTDU-Net',mode='test').cuda()
-        net3.load_state_dict(torch.load('./DNANet/ISTDU-Net_240.pth.tar')['state_dict'])
+        net3.load_state_dict(torch.load('ISTDU_best.pth.tar')['state_dict'])
         net3.eval()
     else:
         net = Net(model_name=opt.model_name, mode='test').cuda()
@@ -66,6 +66,7 @@ def test():
                         sub_pred1=net1.forward(sub_img)
                         sub_pred2=net2.forward(sub_img)
                         sub_pred3=net3.forward(sub_img)
+                        pred[:,:,i:i+512,j:j+512]=torch.max(torch.max(sub_pred1,sub_pred2),sub_pred3)
                         pred1[:,:,i:i+512,j:j+512]=sub_pred1
                         pred2[:,:,i:i+512,j:j+512]=sub_pred2
                         pred3[:,:,i:i+512,j:j+512]=sub_pred3
@@ -73,7 +74,6 @@ def test():
                         sub_pred=net.forward(sub_img)
                         pred[:,:,i:i+512,j:j+512]=sub_pred
             if opt.model_name == 'mix':
-                pred=torch.max(torch.max(pred1,pred2),pred3)
                 pred1=(pred1<opt.threshold[0]).float()
                 pred2=(pred2<opt.threshold[0]).float()
                 pred3=(pred3<opt.threshold[0]).float()
@@ -99,7 +99,7 @@ def test():
             pred = pred[:,:,:size[0],:size[1]] 
             ### save img
             if opt.save_img == True:
-                if size[0] >= 1800 or size[1] >=1800:
+                if size[0] >= 2048 or size[1] >=2048:
                     _img=(pred[0,0,:,:]>opt.threshold[2]).float().cpu()
                 else:
                     _img=(pred[0,0,:,:]>opt.threshold[1]).float().cpu()
