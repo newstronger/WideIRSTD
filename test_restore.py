@@ -52,12 +52,12 @@ def test():
     tbar = tqdm(test_loader)
     with torch.no_grad():
         for idx_iter, (img, size, img_dir) in enumerate(tbar):
+            img = Variable(img).cuda()
             pred=img
             _,_,h,w=img.shape
             pred1=Variable(pred).cuda()
             pred2=Variable(pred).cuda()
             pred3=Variable(pred).cuda()
-            img = Variable(img).cuda()
             index0=torch.ones(pred.shape).cuda()
             for i in range(0, h, 512):
                 for j in range(0,w,512):
