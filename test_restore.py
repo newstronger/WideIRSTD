@@ -78,7 +78,7 @@ def test():
                 pred2=(pred2<opt.threshold[0]).float()
                 pred3=(pred3<opt.threshold[0]).float()
                 index=((pred1+pred2+pred3)>1).float()
-                print(pred.device,index.device,index0.device)
+                # print(pred.device,index.device,index0.device)
                 pred=pred*(index0-index)
                 # if size[0] >= 1800 or size[1] >=1800:
                 #     pred1=(pred1[0,0,:,:]>opt.threshold[1]).float()
