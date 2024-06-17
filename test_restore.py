@@ -55,20 +55,18 @@ def test():
             img = Variable(img).cuda()
             pred=img
             _,_,h,w=img.shape
-            pred1=Variable(pred).cuda()
-            pred2=Variable(pred).cuda()
-            pred3=Variable(pred).cuda()
-            index0=torch.ones(pred.shape).cuda()
             for i in range(0, h, 512):
                 for j in range(0,w,512):
                     sub_img=img[:,:,i:i+512,j:j+512]
                     if opt.model_name == 'mix':
                         if size[0] > 2048 or size[1] > 2048:
                             sub_pred1=torch.zeros(sub_img.shape).cuda()
+                            sub_pred2=torch.zeros(sub_img.shape).cuda()
+                            sub_pred3=torch.zeros(sub_img.shape).cuda()
                         else:
                             sub_pred1=net1.forward(sub_img)
-                        sub_pred2=net2.forward(sub_img)
-                        sub_pred3=net3.forward(sub_img)
+                            sub_pred2=net2.forward(sub_img)
+                            sub_pred3=net3.forward(sub_img)
                         pred[:,:,i:i+512,j:j+512]=torch.max(torch.max(sub_pred1,sub_pred2),sub_pred3)
                         # pred1[:,:,i:i+512,j:j+512]=sub_pred1
                         # pred2[:,:,i:i+512,j:j+512]=sub_pred2
