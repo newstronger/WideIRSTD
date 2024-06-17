@@ -14,7 +14,7 @@ os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 parser = argparse.ArgumentParser(description="PyTorch BasicIRSTD test")
 parser.add_argument("--model_names", default='mix', type=str, 
                     help="model_name: 'ACM', 'ALCNet', 'DNANet', 'ISNet', 'UIUNet', 'RDIAN', 'ISTDU-Net', 'U-Net', 'RISTDnet'")
-parser.add_argument("--pth_dirs", default='checkpoint.pth.tar', type=str, help="checkpoint dir, default=None or ['NUDT-SIRST/ACM_400.pth.tar','NUAA-SIRST/ACM_400.pth.tar']")
+parser.add_argument("--pth_dirs", default='Trid_best.pth.tar', type=str, help="checkpoint dir, default=None or ['NUDT-SIRST/ACM_400.pth.tar','NUAA-SIRST/ACM_400.pth.tar']")
 parser.add_argument("--dataset_dir", default='./datasets', type=str, help="train_dataset_dir")
 parser.add_argument("--dataset_names", default='WildIRSTD', type=str,
                     help="dataset_name: 'NUAA-SIRST', 'NUDT-SIRST', 'IRSTD-1K', 'SIRST3', 'NUDT-SIRST-Sea'")
@@ -100,7 +100,7 @@ def test():
             pred = pred[:,:,:size[0],:size[1]] 
             ### save img
             if opt.save_img == True:
-                if size[0] >= 2048 or size[1] >=2048:
+                if size[0] > 2048 or size[1] > 2048:
                     _img=(pred[0,0,:,:]>opt.threshold[2]).float().cpu()
                 else:
                     _img=(pred[0,0,:,:]>opt.threshold[1]).float().cpu()
