@@ -63,48 +63,27 @@ def test():
                 for j in range(0,w,512):
                     sub_img=img[:,:,i:i+512,j:j+512]
                     if opt.model_name == 'mix':
-                        sub_pred1=net1.forward(sub_img)
+                        if size[0] > 2048 or size[1] > 2048:
+                            sub_pred1=torch.zeros(sub_img.shape).cuda()
+                        else:
+                            sub_pred1=net1.forward(sub_img)
                         sub_pred2=net2.forward(sub_img)
                         sub_pred3=net3.forward(sub_img)
                         pred[:,:,i:i+512,j:j+512]=torch.max(torch.max(sub_pred1,sub_pred2),sub_pred3)
-                        pred1[:,:,i:i+512,j:j+512]=sub_pred1
-                        pred2[:,:,i:i+512,j:j+512]=sub_pred2
-                        pred3[:,:,i:i+512,j:j+512]=sub_pred3
+                        # pred1[:,:,i:i+512,j:j+512]=sub_pred1
+                        # pred2[:,:,i:i+512,j:j+512]=sub_pred2
+                        # pred3[:,:,i:i+512,j:j+512]=sub_pred3
                     else:
                         sub_pred=net.forward(sub_img)
                         pred[:,:,i:i+512,j:j+512]=sub_pred
-            if opt.model_name == 'mix':
-                pred1=(pred1<opt.threshold[0]).float()
-                pred2=(pred2<opt.threshold[0]).float()
-                pred3=(pred3<opt.threshold[0]).float()
-                index=((pred1+pred2+pred3)>1).float()
-                # print(pred.device,index.device,index0.device)
-                pred=pred*(index0-index)
-                # if size[0] >= 1800 or size[1] >=1800:
-                #     pred1=(pred1[0,0,:,:]>opt.threshold[1]).float()
-                #     pred2=(pred2[0,0,:,:]>opt.threshold[1]).float()
-                #     pred3=(pred3[0,0,:,:]>opt.threshold[1]).float()
-                    
-                #     pred=((pred1+pred2+pred3)>1).float()
-                # else :
-                #     pred1=(pred1[0,0,:,:]>opt.threshold[0]).float()
-                #     pred2=(pred2[0,0,:,:]>opt.threshold[0]).float()
-                #     pred3=(pred3[0,0,:,:]>opt.threshold[0]).float()
-                #     pred=((pred1+pred2+pred3)>1).float()
-            # else:
-            #     if size[0] >= 1800 or size[1] >=1800:
-            #         pred=(pred[0,0,:,:]>opt.threshold[1]).float()
-            #     else:
-            #         pred=(pred[0,0,:,:]>opt.threshold[0]).float()
-            # print(pred[:size[0],:size[1]].shape, pred[:,:,:size[0],:size[1]].shape)
             pred = pred[:,:,:size[0],:size[1]] 
             ### save img
             if opt.save_img == True:
-                if size[0] > 2048 or size[1] > 2048:
-                    _img=(pred[0,0,:,:]>opt.threshold[2]).float().cpu()
-                else:
-                    _img=(pred[0,0,:,:]>opt.threshold[1]).float().cpu()
-                # _img = pred.cpu()
+                # if size[0] > 2048 or size[1] > 2048:
+                #     _img=(pred[0,0,:,:]>opt.threshold[2]).float().cpu()
+                # else:
+                #     _img=(pred[0,0,:,:]>opt.threshold[1]).float().cpu()
+                _img=(pred[0,0,:,:]>opt.threshold[1]).float().cpu()
                 img_save = transforms.ToPILImage()(_img)
                 img_save.save(opt.save_img_dir + img_dir[0] + '.png')  
 
