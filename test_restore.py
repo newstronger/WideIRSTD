@@ -54,6 +54,8 @@ def test():
         for idx_iter, (img, size, img_dir) in enumerate(tbar):
             img = Variable(img).cuda()
             pred=img
+            pred_max=img
+            pred_min=img
             _,_,h,w=img.shape
             for i in range(0, h, 512):
                 for j in range(0,w,512):
@@ -67,13 +69,15 @@ def test():
                             sub_pred1=net1.forward(sub_img)
                             sub_pred2=net2.forward(sub_img)
                             sub_pred3=net3.forward(sub_img)
-                        pred[:,:,i:i+512,j:j+512]=torch.max(torch.max(sub_pred1,sub_pred2),sub_pred3)
+                        pred_max[:,:,i:i+512,j:j+512]=torch.max(torch.max(sub_pred1,sub_pred2),sub_pred3)
+                        pred_min[:,:,i:i+512,j:j+512]=torch.min(torch.min(sub_pred1,sub_pred2),sub_pred3)
                         # pred1[:,:,i:i+512,j:j+512]=sub_pred1
                         # pred2[:,:,i:i+512,j:j+512]=sub_pred2
                         # pred3[:,:,i:i+512,j:j+512]=sub_pred3
                     else:
                         sub_pred=net.forward(sub_img)
                         pred[:,:,i:i+512,j:j+512]=sub_pred
+            pred = pred_max*(1-(pred_min<opt.threshold[1]).float())
             pred = pred[:,:,:size[0],:size[1]] 
             ### save img
             if opt.save_img == True:
