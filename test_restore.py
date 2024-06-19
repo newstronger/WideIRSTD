@@ -45,8 +45,8 @@ def test():
         net3=Net(model_name='ISTDU-Net',mode='test').cuda()
         net3.load_state_dict(torch.load('./DNANet/ISTDU-Net_240.pth.tar')['state_dict'])
         net3.eval()
-        net4=Net(model_name='ISTDU-Net',mode='test').cuda()
-        net4.load_state_dict(torch.load('ISTDU_best.pth.tar')['state_dict'])
+        net4=Net(model_name='DNANet',mode='test').cuda()
+        net4.load_state_dict(torch.load('DNA_best.pth.tar')['state_dict'])
         net4.eval()
     else:
         net = Net(model_name=opt.model_name, mode='test').cuda()
@@ -56,45 +56,73 @@ def test():
     with torch.no_grad():
         for idx_iter, (img, size, img_dir) in enumerate(tbar):
             img = Variable(img).cuda()
-            pred=img
-            pred1=img
-            pred2=img
-            pred3=img
-            pred4=img
-            aux_pred=img
-            # pred_max=img
-            # pred_min=img
+            pred=torch.zeros(img.shape).cuda()
+            pred1=torch.zeros(img.shape).cuda()
+            pred2=torch.zeros(img.shape).cuda()
+            pred3=torch.zeros(img.shape).cuda()
+            pred4=torch.zeros(img.shape).cuda()
+            aux_pred=torch.zeros(img.shape).cuda()
             _,_,h,w=img.shape
-            for i in range(0, h, 512):
-                for j in range(0,w,512):
-                    sub_img=img[:,:,i:i+512,j:j+512]
-                    if opt.model_name == 'mix':
-                        if size[0] > 2048 or size[1] > 2048:
-                            sub_pred1=torch.zeros(sub_img.shape).cuda()
-                            sub_pred2=torch.zeros(sub_img.shape).cuda()
-                            sub_pred3=torch.zeros(sub_img.shape).cuda()
-                            sub_pred4=torch.zeros(sub_img.shape).cuda()
-                        else:
+            if size[0] >=1536 or size[1]>=1536:
+                pred=torch.zeros(img.shape).cuda()
+            else:
+                for i in range(0, h, 512):
+                    for j in range(0,w,512):
+                        sub_img=img[:,:,i:i+512,j:j+512]
+                        if opt.model_name == 'mix':
                             sub_pred1=net1.forward(sub_img)
+                            pred1[:,:,i:i+512,j:j+512]=sub_pred1
+
                             sub_pred2=net2.forward(sub_img)
+                            pred2[:,:,i:i+512,j:j+512]=sub_pred2
+
                             sub_pred3=net3.forward(sub_img)
-                            sub_pred4=net4.forward(sub_img)
-                        # pred_max[:,:,i:i+512,j:j+512]=torch.max(torch.max(sub_pred1,sub_pred2),sub_pred3)
-                        # pred_min[:,:,i:i+512,j:j+512]=torch.min(torch.min(sub_pred1,sub_pred2),sub_pred3)
-                        pred1[:,:,i:i+512,j:j+512]=sub_pred1
-                        pred2[:,:,i:i+512,j:j+512]=sub_pred2
-                        pred3[:,:,i:i+512,j:j+512]=sub_pred3
-                        pred4[:,:,i:i+512,j:j+512]=sub_pred4
-                    else:
-                        sub_pred=net.forward(sub_img)
-                        pred[:,:,i:i+512,j:j+512]=sub_pred
-            if opt.model_name == 'mix':
+                            pred3[:,:,i:i+512,j:j+512]=sub_pred3
+
+                            # sub_pred4=net4.forward(sub_img)
+                            # pred4[:,:,i:i+512,j:j+512]=sub_pred4
+                            sub_pred4=net6.forward(sub_img)
+                            pred4[:,:,i:i+512,j:j+512]=sub_pred4
+                        else :
+                            sub_pred=net.forward(sub_img)
+                            pred[:,:,i:i+512,j:j+512]=sub_pred
+            if opt.model_name=='mix':
+                pred1=(pred1>opt.threshold[1]).float()
                 pred2=(pred2>opt.threshold[1]).float()
                 pred3=(pred3>opt.threshold[1]).float()
                 pred4=(pred4>opt.threshold[1]).float()
-                aux_pred=((pred2+pred3+pred4)>1).float()
-                pred=torch.max(pred1,aux_pred)
-            pred = pred[:,:,:size[0],:size[1]] 
+                pred=((pred1+pred2+pred3+pred4)>1).float()
+            pred=pred[:,:,:size[0],:size[1]]
+            # for i in range(0, h, 512):
+            #     for j in range(0,w,512):
+            #         sub_img=img[:,:,i:i+512,j:j+512]
+            #         if opt.model_name == 'mix':
+            #             if size[0] > 2048 or size[1] > 2048:
+            #                 sub_pred1=torch.zeros(sub_img.shape).cuda()
+            #                 sub_pred2=torch.zeros(sub_img.shape).cuda()
+            #                 sub_pred3=torch.zeros(sub_img.shape).cuda()
+            #                 sub_pred4=torch.zeros(sub_img.shape).cuda()
+            #             else:
+            #                 sub_pred1=net1.forward(sub_img)
+            #                 sub_pred2=net2.forward(sub_img)
+            #                 sub_pred3=net3.forward(sub_img)
+            #                 sub_pred4=net4.forward(sub_img)
+            #             # pred_max[:,:,i:i+512,j:j+512]=torch.max(torch.max(sub_pred1,sub_pred2),sub_pred3)
+            #             # pred_min[:,:,i:i+512,j:j+512]=torch.min(torch.min(sub_pred1,sub_pred2),sub_pred3)
+            #             pred1[:,:,i:i+512,j:j+512]=sub_pred1
+            #             pred2[:,:,i:i+512,j:j+512]=sub_pred2
+            #             pred3[:,:,i:i+512,j:j+512]=sub_pred3
+            #             pred4[:,:,i:i+512,j:j+512]=sub_pred4
+            #         else:
+            #             sub_pred=net.forward(sub_img)
+            #             pred[:,:,i:i+512,j:j+512]=sub_pred
+            # if opt.model_name == 'mix':
+            #     pred2=(pred2>opt.threshold[1]).float()
+            #     pred3=(pred3>opt.threshold[1]).float()
+            #     pred4=(pred4>opt.threshold[1]).float()
+            #     aux_pred=((pred2+pred3+pred4)>1).float()
+            #     pred=torch.max(pred1,aux_pred)
+            # pred = pred[:,:,:size[0],:size[1]] 
             ### save img
             if opt.save_img == True:
                 # if size[0] > 2048 or size[1] > 2048:
