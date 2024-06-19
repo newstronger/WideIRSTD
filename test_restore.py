@@ -92,7 +92,7 @@ def test():
                 pred2=(pred2>opt.threshold[1]).float()
                 pred3=(pred3>opt.threshold[1]).float()
                 pred4=(pred4>opt.threshold[1]).float()
-                aux_pred=((pred2+pred3+pred4)>2).float()
+                aux_pred=((pred2+pred3+pred4)>1).float()
                 pred=torch.max(pred1,aux_pred)
             pred = pred[:,:,:size[0],:size[1]] 
             ### save img
