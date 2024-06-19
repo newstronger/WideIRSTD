@@ -37,14 +37,17 @@ def test():
     test_loader = DataLoader(dataset=test_set, num_workers=8, batch_size=opt.batchSize, shuffle=False)
     if opt.model_name == 'mix':
         net1=Net(model_name='Trid',mode='test').cuda()
-        net1.load_state_dict(torch.load('Trid_best.pth.tar')['state_dict'])
+        net1.load_state_dict(torch.load('checkpoint.pth.tar')['state_dict'])
         net1.eval()
-        net2=Net(model_name='DNANet',mode='test').cuda()
-        net2.load_state_dict(torch.load('DNA_best.pth.tar')['state_dict'])
+        net2=Net(model_name='Trid',mode='test').cuda()
+        net2.load_state_dict(torch.load('Trid_best.pth.tar')['state_dict'])
         net2.eval()
         net3=Net(model_name='ISTDU-Net',mode='test').cuda()
-        net3.load_state_dict(torch.load('ISTDU_best.pth.tar')['state_dict'])
+        net3.load_state_dict(torch.load('./DNANet/ISTDU-Net_240.pth.tar')['state_dict'])
         net3.eval()
+        net4=Net(model_name='ISTDU-Net',mode='test').cuda()
+        net4.load_state_dict(torch.load('ISTDU_best.pth.tar')['state_dict'])
+        net4.eval()
     else:
         net = Net(model_name=opt.model_name, mode='test').cuda()
         net.load_state_dict(torch.load(opt.pth_dir)['state_dict'])
@@ -57,6 +60,7 @@ def test():
             pred1=img
             pred2=img
             pred3=img
+            pred4=img
             aux_pred=img
             # pred_max=img
             # pred_min=img
@@ -69,22 +73,26 @@ def test():
                             sub_pred1=torch.zeros(sub_img.shape).cuda()
                             sub_pred2=torch.zeros(sub_img.shape).cuda()
                             sub_pred3=torch.zeros(sub_img.shape).cuda()
+                            sub_pred4=torch.zeros(sub_img.shape).cuda()
                         else:
                             sub_pred1=net1.forward(sub_img)
                             sub_pred2=net2.forward(sub_img)
                             sub_pred3=net3.forward(sub_img)
+                            sub_pred4=net4.forward(sub_img)
                         # pred_max[:,:,i:i+512,j:j+512]=torch.max(torch.max(sub_pred1,sub_pred2),sub_pred3)
                         # pred_min[:,:,i:i+512,j:j+512]=torch.min(torch.min(sub_pred1,sub_pred2),sub_pred3)
                         pred1[:,:,i:i+512,j:j+512]=sub_pred1
                         pred2[:,:,i:i+512,j:j+512]=sub_pred2
                         pred3[:,:,i:i+512,j:j+512]=sub_pred3
+                        pred4[:,:,i:i+512,j:j+512]=sub_pred4
                     else:
                         sub_pred=net.forward(sub_img)
                         pred[:,:,i:i+512,j:j+512]=sub_pred
             if opt.model_name == 'mix':
                 pred2=(pred2>opt.threshold[1]).float()
                 pred3=(pred3>opt.threshold[1]).float()
-                aux_pred=((pred2+pred3)>1).float()
+                pred4=(pred4>opt.threshold[1]).float()
+                aux_pred=((pred2+pred3+pred4)>2).float()
                 pred=torch.max(pred1,aux_pred)
             pred = pred[:,:,:size[0],:size[1]] 
             ### save img
