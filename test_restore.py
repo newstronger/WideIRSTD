@@ -79,9 +79,7 @@ def test():
                             sub_pred3=net3.forward(sub_img)
                             pred3[:,:,i:i+512,j:j+512]=sub_pred3
 
-                            # sub_pred4=net4.forward(sub_img)
-                            # pred4[:,:,i:i+512,j:j+512]=sub_pred4
-                            sub_pred4=net6.forward(sub_img)
+                            sub_pred4=net4.forward(sub_img)
                             pred4[:,:,i:i+512,j:j+512]=sub_pred4
                         else :
                             sub_pred=net.forward(sub_img)
@@ -93,36 +91,6 @@ def test():
                 pred4=(pred4>opt.threshold[1]).float()
                 pred=((pred1+pred2+pred3+pred4)>1).float()
             pred=pred[:,:,:size[0],:size[1]]
-            # for i in range(0, h, 512):
-            #     for j in range(0,w,512):
-            #         sub_img=img[:,:,i:i+512,j:j+512]
-            #         if opt.model_name == 'mix':
-            #             if size[0] > 2048 or size[1] > 2048:
-            #                 sub_pred1=torch.zeros(sub_img.shape).cuda()
-            #                 sub_pred2=torch.zeros(sub_img.shape).cuda()
-            #                 sub_pred3=torch.zeros(sub_img.shape).cuda()
-            #                 sub_pred4=torch.zeros(sub_img.shape).cuda()
-            #             else:
-            #                 sub_pred1=net1.forward(sub_img)
-            #                 sub_pred2=net2.forward(sub_img)
-            #                 sub_pred3=net3.forward(sub_img)
-            #                 sub_pred4=net4.forward(sub_img)
-            #             # pred_max[:,:,i:i+512,j:j+512]=torch.max(torch.max(sub_pred1,sub_pred2),sub_pred3)
-            #             # pred_min[:,:,i:i+512,j:j+512]=torch.min(torch.min(sub_pred1,sub_pred2),sub_pred3)
-            #             pred1[:,:,i:i+512,j:j+512]=sub_pred1
-            #             pred2[:,:,i:i+512,j:j+512]=sub_pred2
-            #             pred3[:,:,i:i+512,j:j+512]=sub_pred3
-            #             pred4[:,:,i:i+512,j:j+512]=sub_pred4
-            #         else:
-            #             sub_pred=net.forward(sub_img)
-            #             pred[:,:,i:i+512,j:j+512]=sub_pred
-            # if opt.model_name == 'mix':
-            #     pred2=(pred2>opt.threshold[1]).float()
-            #     pred3=(pred3>opt.threshold[1]).float()
-            #     pred4=(pred4>opt.threshold[1]).float()
-            #     aux_pred=((pred2+pred3+pred4)>1).float()
-            #     pred=torch.max(pred1,aux_pred)
-            # pred = pred[:,:,:size[0],:size[1]] 
             ### save img
             if opt.save_img == True:
                 # if size[0] > 2048 or size[1] > 2048:
