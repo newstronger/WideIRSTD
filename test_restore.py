@@ -54,8 +54,12 @@ def test():
         for idx_iter, (img, size, img_dir) in enumerate(tbar):
             img = Variable(img).cuda()
             pred=img
-            pred_max=img
-            pred_min=img
+            pred1=img
+            pred2=img
+            pred3=img
+            aux_pred=img
+            # pred_max=img
+            # pred_min=img
             _,_,h,w=img.shape
             for i in range(0, h, 512):
                 for j in range(0,w,512):
