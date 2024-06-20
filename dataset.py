@@ -92,10 +92,10 @@ class TestSetLoader(Dataset):
         
         h, w = img.shape
         img = PadImg(img,times=512)
-        
         img = img[np.newaxis,:]
-        
         img = torch.from_numpy(np.ascontiguousarray(img))
+        if h>=1536 or w>=1536:
+            img = torch.zeros(img.shape)
         return img, [h,w], self.test_list[idx]
     def __len__(self):
         return len(self.test_list) 
