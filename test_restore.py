@@ -24,7 +24,7 @@ parser.add_argument("--img_norm_cfg", default=None, type=dict,
 parser.add_argument("--save_img", default=True, type=bool, help="save image of or not")
 parser.add_argument("--save_img_dir", type=str, default='./inference/mask/', help="path of saved image")
 parser.add_argument("--save_log", type=str, default='./log_seed_posSample/', help="path of saved .pth")
-parser.add_argument("--threshold", type=list, default=[0.1,0.5,0.7])
+parser.add_argument("--threshold", type=list, default=[0.1,0.5,0.8])
 parser.add_argument("--batchSize", type=int, default=1, help="Training batch sizse")
 
 global opt
@@ -82,7 +82,7 @@ def test():
                         sub_pred=net.forward(sub_img)
                         pred[:,:,i:i+512,j:j+512]=sub_pred
             if opt.model_name=='mix':
-                ori_pred1=pred1
+                ori_pred1=pred3
                 pred1=(pred1>opt.threshold[1]).float()
                 pred2=(pred2>opt.threshold[1]).float()
                 pred3=(pred3>opt.threshold[1]).float()
