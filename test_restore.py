@@ -24,7 +24,7 @@ parser.add_argument("--img_norm_cfg", default=None, type=dict,
 parser.add_argument("--save_img", default=True, type=bool, help="save image of or not")
 parser.add_argument("--save_img_dir", type=str, default='./inference/mask/', help="path of saved image")
 parser.add_argument("--save_log", type=str, default='./log_seed_posSample/', help="path of saved .pth")
-parser.add_argument("--threshold", type=list, default=[0.1,0.5,0.95])
+parser.add_argument("--threshold", type=list, default=[0.1,0.5,0.7])
 parser.add_argument("--batchSize", type=int, default=1, help="Training batch sizse")
 
 global opt
@@ -63,33 +63,31 @@ def test():
             pred4=torch.zeros(img.shape).cuda()
             aux_pred=torch.zeros(img.shape).cuda()
             _,_,h,w=img.shape
-            if size[0] >=1536 or size[1]>=1536:
-                pred=torch.zeros(img.shape).cuda()
-            else:
-                for i in range(0, h, 512):
-                    for j in range(0,w,512):
-                        sub_img=img[:,:,i:i+512,j:j+512]
-                        if opt.model_name == 'mix':
-                            sub_pred1=net1.forward(sub_img)
-                            pred1[:,:,i:i+512,j:j+512]=sub_pred1
+            for i in range(0, h, 512):
+                for j in range(0,w,512):
+                    sub_img=img[:,:,i:i+512,j:j+512]
+                    if opt.model_name == 'mix':
+                        sub_pred1=net1.forward(sub_img)
+                        pred1[:,:,i:i+512,j:j+512]=sub_pred1
 
-                            sub_pred2=net2.forward(sub_img)
-                            pred2[:,:,i:i+512,j:j+512]=sub_pred2
+                        sub_pred2=net2.forward(sub_img)
+                        pred2[:,:,i:i+512,j:j+512]=sub_pred2
 
-                            sub_pred3=net3.forward(sub_img)
-                            pred3[:,:,i:i+512,j:j+512]=sub_pred3
+                        sub_pred3=net3.forward(sub_img)
+                        pred3[:,:,i:i+512,j:j+512]=sub_pred3
 
-                            sub_pred4=net4.forward(sub_img)
-                            pred4[:,:,i:i+512,j:j+512]=sub_pred4
-                        else :
-                            sub_pred=net.forward(sub_img)
-                            pred[:,:,i:i+512,j:j+512]=sub_pred
+                        sub_pred4=net4.forward(sub_img)
+                        pred4[:,:,i:i+512,j:j+512]=sub_pred4
+                    else :
+                        sub_pred=net.forward(sub_img)
+                        pred[:,:,i:i+512,j:j+512]=sub_pred
             if opt.model_name=='mix':
                 pred1=(pred1>opt.threshold[1]).float()
                 pred2=(pred2>opt.threshold[1]).float()
                 pred3=(pred3>opt.threshold[1]).float()
                 pred4=(pred4>opt.threshold[1]).float()
                 pred=((pred1+pred2+pred3+pred4)>1).float()
+                pred=torch.max(pred1,pred)
             pred=pred[:,:,:size[0],:size[1]]
             ### save img
             if opt.save_img == True:
