@@ -82,12 +82,13 @@ def test():
                         sub_pred=net.forward(sub_img)
                         pred[:,:,i:i+512,j:j+512]=sub_pred
             if opt.model_name=='mix':
+                ori_pred1=pred1
                 pred1=(pred1>opt.threshold[1]).float()
                 pred2=(pred2>opt.threshold[1]).float()
                 pred3=(pred3>opt.threshold[1]).float()
                 pred4=(pred4>opt.threshold[1]).float()
                 pred=((pred1+pred2+pred3+pred4)>1).float()
-                pred=torch.max(pred1,pred)
+                pred=torch.max(ori_pred1,pred)
             pred=pred[:,:,:size[0],:size[1]]
             ### save img
             if opt.save_img == True:
